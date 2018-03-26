@@ -1,6 +1,6 @@
 from collections import defaultdict
 from itertools import combinations
-import
+
 
 class cached_property(object):
 
