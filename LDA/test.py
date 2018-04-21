@@ -49,3 +49,13 @@ n = 5
 for i, topic_dist in enumerate(topic_word):
     topic_words = np.array(vocab)[np.argsort(topic_dist)][:-(n+1):-1]
     print('*Topic {}\n- {}'.format(i, ' '.join(topic_words)))
+
+print('--------------------------------------')
+
+# The most possible topics of top 10 texts.
+doc_topic = model.doc_topic_
+print("type(doc_topic): {}".format(type(doc_topic)))
+print("shape: {}".format(doc_topic.shape))
+for n in range(10):
+    topic_most_pr = doc_topic[n].argmax()
+    print("doc: {} topic: {}".format(n, topic_most_pr))
