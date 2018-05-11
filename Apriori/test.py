@@ -52,3 +52,6 @@ if __name__ == '__main__':
     print('mining completed.')
     print('min Support:' + str(minsup) + ', min Confidence:' + str(minconf) + '.')
     print('time cost: %.6fs.' % (end - start))
+
+
+# python test.py -s minS -c minC -i inputFile -o outputFile
