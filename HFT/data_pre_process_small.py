@@ -42,7 +42,11 @@ class DataPreProcess:
             item = line[1]
             rating = line[2]
             record[int(rating)] += 1
-            # word_num = line[3]
+            word_num = line[3]
+            if word_num == 0 or len(line) < 5:
+                print('hhhhhhhhhhhhhhhhhhhh')
+                self.cnt -= 1
+                continue
             review = ' '.join(line[4:])
             # item_ids.append(item)
             data.append([item, rating, self._process_text(review), user])

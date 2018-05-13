@@ -31,14 +31,15 @@ def sampleWithDistribution(p):
     -------
     i: index of sampled value
     """
-    r = random.random()  # Rational number between 0 and 1
-
-    for i in range(len(p)):
-        r = r - p[i]
-        # print('p[i]: ', type(p[i]))
-        if r <= 0:
-            return i
-    raise Exception("Error... selectWithDistribution with r value %f" % r)
+    while True:
+        r = random.random()  # Rational number between 0 and 1
+        # print('p: ', type(p))
+        for i in range(len(p)):
+            r = r - p[i]
+            # print('p[i]: ', type(p[i]))
+            if r <= 0:
+                return i
+    return -1
 
 
 class ReviewModel:
@@ -103,28 +104,28 @@ class ReviewModel:
         """
 
         new_topic_assignments = list()
-
+        error = 0
         self.topic_frequencies.fill(0)
         self.word_topic_frequencies.fill(0)
-
         for i in range(self.n_docs):
             words = self.reviews[i]
-
             p = self.theta[i, :] * self.phi[:, words].transpose()
             p /= np.sum(p, axis=1)[:, None]
             p = p.tolist()
-            # print('p: ', type(p))
-            # print(p)
-            # topic_assignments = sampleWithDistribution(p)
-            topic_assignments = map(sampleWithDistribution, p)
-            # print(topic_assignments)
-            topic_assignments = list(topic_assignments)
+            topic_assignments = list(map(sampleWithDistribution, p))
+            len1 = len(topic_assignments)
+            topic_assignments = [x for x in topic_assignments if x != -1
+                                 and 0 <= x < len(self.topic_frequencies[i])]
+            if len(topic_assignments) != len1:
+                error += 1
+                # print('!!  ', len1, len(topic_assignments), type(topic_assignments))
             # print('1: ', type(topic_assignments))
             # print('2: ', type(words))
-            np.add.at(self.topic_frequencies[i], topic_assignments, 1)
-            np.add.at(self.word_topic_frequencies, [topic_assignments, words], 1)
+            if len(topic_assignments) > 0:
+                np.add.at(self.topic_frequencies[i], topic_assignments, 1)
+                np.add.at(self.word_topic_frequencies, [topic_assignments, words], 1)
+                new_topic_assignments.append(np.array(topic_assignments))
 
-            new_topic_assignments.append(np.array(topic_assignments))
-
+        print('error:', error)
         self.z = new_topic_assignments
 
