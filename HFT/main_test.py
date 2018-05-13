@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-
+import pandas as pd
 from hft import HFT
 from pprint import pprint
 
@@ -57,14 +57,64 @@ if __name__ == '__main__':
         # print i, ': Gibbs Sampling', hft.kappa
     print('5. Finished updating parameters in', (dt.now() - start_time).seconds, 'seconds')
 
-    pprint('\n------------------------------')
-    pprint(hft.user_dict)
-    pprint('------------------------------')
+    # print(len(hft.business_dict[0]))
 
-    test_user = 'R6vb0FtmClhfwajs_AuusQ'
-    test_item = 'jQsNFOzDpxPmOurSWCg1vQ'
-    test_user = hft.user_dict[test_user]
-    test_item = hft.business_dict[test_item]
-    r = hft.predict(test_user, test_item)
-    print(r)
+    file = open(r'Data\test.dat', 'rU', encoding='UTF-8')
+    wrt = open(r'Data\result.dat', 'w', encoding='UTF-8')
+    record = [0 for x in range(6)]
+    print(record)
+    for line in file:
+        line = line.split(' ')
+        u = line[0]
+        i = line[1][:-1]  # remove '\n'
+        # print(u, i)
+        # if u in hft.user_dict.keys():
+        #     print(u, 'haha', hft.user_dict[u])
+        # if i in hft.business_dict.keys():
+        #     print(u, 'ffff', hft.business_dict[u])
+        # print(i)
+        # print(len(i))
+        if u in hft.user_dict.keys() and i in hft.business_dict.keys():
+            unum = hft.user_dict[u]
+            inum = hft.business_dict[i]
+            rat = hft.predict(unum, inum)
+            rat = int(rat + 0.5) if 0 <= rat <= 5 else (0 if rat < 0 else 5)
+            record[rat] += 1
+            s = ('%s %s %s\n' % (u, i, rat))
+            wrt.write(s)
+    file.close()
+    wrt.close()
+    print(record)
+    # print(hft.business_dict[0])
+    # print(len(hft.business_dict[0]))
 
+    # pprint('\n------------------------------')
+    # mat = hft.rating_model.data.toarray()
+    # pprint(mat[878:880, 42:44])
+    # pprint('------------------------------')
+
+    # test_user = 'R6vb0FtmClhfwajs_AuusQ'
+    # test_item = 'jQsNFOzDpxPmOurSWCg1vQ'
+    # test_user = hft.user_dict[test_user]
+    # test_item = hft.business_dict[test_item]
+    # for u in hft.user_dict.keys():
+    #     for i in hft.business_dict.keys():
+    #         if str(u).isdigit() and str(i).isdigit() and mat[u-1][i-1] == 0:
+    #             test_user, test_item = u, i
+    #             rating = mat[u-1][i-1]
+    # print('test: ', test_user, test_item, rating)
+    # x = hft.predict(test_user, test_item)
+
+    # m = hft.rating_model.predicted_rating
+    # a, b = m.shape
+    # print('shape', a, b)
+    #
+    # c = 0
+    # for i in range(a):
+    #     for j in range(b):
+    #         if m[i][j] != 0:
+    #             c += 1
+    #             # if c > 10:
+    #             #     break
+    #             print(i, j, m[i][j])
+    # print(c)

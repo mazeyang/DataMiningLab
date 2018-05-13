@@ -7,6 +7,7 @@ from reviewModel import ReviewModel
 import data_pre_process
 import data_load
 
+
 class HFT:
     def __init__(self, ratings_filename=r'Data\ratings.npz', reviews_filename=r'Data\reviews.npz', n_hidden=10):
         self.rating_model = RatingModel(ratings_filename, n_hidden)
@@ -160,8 +161,12 @@ class HFT:
             # print 'Main iteration', num_iter
         self.rating_model.get_predicted_ratings()
 
-    def predict(self, user, item):
-        return self.rating_model.predicted_rating[user, item]
+    def predict(self, u, i):
+        res = np.dot(self.rating_model.gamma_user[u, :], self.rating_model.gamma_item[i, :]) + \
+                                                   self.rating_model.alpha + \
+                                                   self.rating_model.beta_user[u] + self.rating_model.beta_item[i]
+        # self.rating_model.get_predicted_ratings()
+        return res
 
     def error_gradients(self, params):
         self.opt_iter += 1

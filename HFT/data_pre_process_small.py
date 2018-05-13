@@ -26,46 +26,45 @@ class DataPreProcess:
         self.output_file = output_file
         self.test_input_file = test_input_file
         self.test_output_file = test_output_file
-
+        record = [0 for x in range(6)]
+        print(record)
         # load train file
         file = open(self.input_file, 'rU', encoding='UTF-8')
         data = []
         # item_ids = []
         for line in file:
             self.cnt += 1
-            if self.cnt % 10000 == 0:
+            if self.cnt >= 100000:
                 print('solved', self.cnt, ' cur time:', dt.now())
+                break
             line = line.split(' ')
             user = line[0]
             item = line[1]
             rating = line[2]
+            record[int(rating)] += 1
             # word_num = line[3]
             review = ' '.join(line[4:])
             # item_ids.append(item)
             data.append([item, rating, self._process_text(review), user])
         file.close()
         print('cnt: ', self.cnt)
-
+        print(record)
         data = pd.DataFrame(data)
         data.columns = ['business_id', 'stars', 'text', 'user_id']
         data.to_csv(output_file, encoding='utf-8', line_terminator='\n')
-        # item_ids = list(set(item_ids))
-        # with open('item_ids.txt', 'w') as p:
-        #     for i in range(len(item_ids)):
-        #         p.write(item_ids[i] + '\n')
 
         # load test file
-        file = open(self.test_input_file, 'rU', encoding='UTF-8')
-        data = []
-        for line in file:
-            line = line.split(' ')
-            user = line[0]
-            item = line[1]
-            data.append([user, item])
-        file.close()
-        data = pd.DataFrame(data)
-        data.columns = ['user_id', 'business_id']
-        data.to_csv(test_output_file, encoding='utf-8', line_terminator='\n')
+        # file = open(self.test_input_file, 'rU', encoding='UTF-8')
+        # data = []
+        # for line in file:
+        #     line = line.split(' ')
+        #     user = line[0]
+        #     item = line[1]
+        #     data.append([user, item])
+        # file.close()
+        # data = pd.DataFrame(data)
+        # data.columns = ['user_id', 'business_id']
+        # data.to_csv(test_output_file, encoding='utf-8')
 
     def _process_text(self, sentence):
         '''
@@ -105,7 +104,7 @@ class DataPreProcess:
         for indexs in text.index:
 
             entry = text.loc[indexs]
-            if isinstance(entry, str) == False:
+            if not isinstance(entry, str):
                 # self.cnt -= 1
                 continue
             # print(indexs, type(entry), entry)
@@ -194,8 +193,8 @@ class DataPreProcess:
         for r_ix, review in enumerate(self.review_data['text']):
             b_id = self.business_ids[r_ix]
             b_ix = self.business_dict[b_id]
-            if i % 10000 == 0:
-                print('solved :', i)
+            # if i % 10000 == 0:
+            #     print('solved :', i)
             i += 1
             words = review.split()
             for word in words:
