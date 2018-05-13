@@ -52,20 +52,7 @@ if __name__ == '__main__':
             record[rat] += 1
             s = ('%s %s %s\n' % (u, i, rat))
             wrt.write(s)
-        else:
-            rd = random.random()
-            if rd <= 0.05:
-                rat = 1
-            elif rd <= 0.15:
-                rat = 2
-            elif rd <= 0.35:
-                rat = 3
-            elif rd <= 0.75:
-                rat = 4
-            else :
-                rat = 5
-            s = ('%s %s %s\n' % (u, i, rat))
-            wrt.write(s)
+
     file.close()
     wrt.close()
     print(record)
