@@ -34,7 +34,7 @@ class DataPreProcess:
         # item_ids = []
         for line in file:
             self.cnt += 1
-            if self.cnt >= 100000:
+            if self.cnt >= 20000:
                 print('solved', self.cnt, ' cur time:', dt.now())
                 break
             line = line.split(' ')
@@ -43,10 +43,6 @@ class DataPreProcess:
             rating = line[2]
             record[int(rating)] += 1
             word_num = line[3]
-            if word_num == 0 or len(line) < 5:
-                print('hhhhhhhhhhhhhhhhhhhh')
-                self.cnt -= 1
-                continue
             review = ' '.join(line[4:])
             # item_ids.append(item)
             data.append([item, rating, self._process_text(review), user])
@@ -134,7 +130,6 @@ class DataPreProcess:
 
     def _bag_of_word(self, text, vocab_lookup):
         counts = {}
-
         try:
             for word in text.split():
                 if word in counts:

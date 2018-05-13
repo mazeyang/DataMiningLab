@@ -31,15 +31,14 @@ def sampleWithDistribution(p):
     -------
     i: index of sampled value
     """
-    while True:
-        r = random.random()  # Rational number between 0 and 1
-        # print('p: ', type(p))
-        for i in range(len(p)):
-            r = r - p[i]
-            # print('p[i]: ', type(p[i]))
-            if r <= 0:
-                return i
-    return -1
+    r = random.random()  # Rational number between 0 and 1
+    # print('p: ', type(p))
+    for i in range(len(p)):
+        r = r - p[i]
+        # print('p[i]: ', type(p[i]))
+        if r <= 0:
+            return i
+    return 0  # i don't know how to solve here
 
 
 class ReviewModel:
@@ -74,37 +73,20 @@ class ReviewModel:
         -------
         loglikelihood: The loglikelihood of the entire corpus
         """
-        # All_loglikelihoods = list()
-        log_likelihood = 0
 
+        log_likelihood = 0
         for i in range(self.n_docs):
             words = self.reviews[i]
             topics = self.z[i]
-
             # loglikelihood = np.log(self.theta[([i]*len(topics), topics)]) + np.log(self.phi[(topics, words)])
             log_likelihood += np.sum(np.log(self.theta[i, topics]) + np.log(self.phi[topics, words]))
-            # if np.isnan(log_likelihood):
-            #     print np.sum(np.log(self.theta[i, topics]) + np.log(self.phi[topics, words]))
-            #     print i
-            #     sys.exit(1)
 
-            # All_loglikelihoods.append(np.sum(loglikelihood))
-
-        # if log_likelihood - sum(All_loglikelihoods) != 0.0:
-        #     print log_likelihood, sum(All_loglikelihoods)
-        #     sys.exit(1)
-        # return sum(All_loglikelihoods)
         return log_likelihood
 
     def Gibbsampler(self):
-        """
-        Resamples the topic_assingments accross the entires corpus
-        Returns:
-        new_topic_assingments: list of numpy arrays
-        """
 
         new_topic_assignments = list()
-        error = 0
+        # error = 0
         self.topic_frequencies.fill(0)
         self.word_topic_frequencies.fill(0)
         for i in range(self.n_docs):
@@ -113,19 +95,16 @@ class ReviewModel:
             p /= np.sum(p, axis=1)[:, None]
             p = p.tolist()
             topic_assignments = list(map(sampleWithDistribution, p))
-            len1 = len(topic_assignments)
-            topic_assignments = [x for x in topic_assignments if x != -1
-                                 and 0 <= x < len(self.topic_frequencies[i])]
-            if len(topic_assignments) != len1:
-                error += 1
+            # len1 = len(topic_assignments)
+            # topic_assignments = [x for x in topic_assignments if x != -1
+            #                      and 0 <= x < len(self.topic_frequencies[i])]
+            # if len(topic_assignments) != len1:
+            #     error += 1
                 # print('!!  ', len1, len(topic_assignments), type(topic_assignments))
-            # print('1: ', type(topic_assignments))
-            # print('2: ', type(words))
-            if len(topic_assignments) > 0:
-                np.add.at(self.topic_frequencies[i], topic_assignments, 1)
-                np.add.at(self.word_topic_frequencies, [topic_assignments, words], 1)
-                new_topic_assignments.append(np.array(topic_assignments))
+            np.add.at(self.topic_frequencies[i], topic_assignments, 1)
+            np.add.at(self.word_topic_frequencies, [topic_assignments, words], 1)
+            new_topic_assignments.append(np.array(topic_assignments))
 
-        print('error:', error)
+        # print('error:', error)
         self.z = new_topic_assignments
 

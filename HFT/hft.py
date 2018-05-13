@@ -26,7 +26,7 @@ class HFT:
         self.step_size = 1e-5
         self.max_kappa = 1e+5
         self.max_grad_iter = 100
-        self.convergence_threshold = 1e-3  # to be changed
+        self.convergence_threshold = 0.01  # to be changed
 
         self.user_dict = data_load.user_ids()
         self.business_dict = data_load.business_ids()
